@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  app:
+    # image: huodon/cuda-devel:12.1.1
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    shm_size: 1gb
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              # 该参数必须出现
+              count: all
+              capabilities: [gpu]
+    user: sa
+    working_dir: /app
+    volumes:
+      - ~/.config:/home/sa/.config
+      - ~/.cache:/home/sa/.cache
+      - ~/.vscode-server:/home/sa/.vscode-server
+      - ~/.vscode-server-insiders:/home/sa/.vscode-server-insiders
+      - ~/.codeium/:/home/sa/.codeium
+      - ~/.cargo/:/home/sa/.cargo
+      # ====================================================================
+      - ./mPLUG-Owl2:/app
+      - ./models:/app/models
+    ports:
+      - 7860:7860
+    # docker compose run --rm -it app
+    # command: python3 launch.py --listen=0.0.0.0
